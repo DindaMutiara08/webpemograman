@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning - Materi Perkuliahan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 105, 180, 0.3), transparent);
+            border-radius: 50%;
+            top: -200px;
+            left: -200px;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.2), transparent);
+            border-radius: 50%;
+            bottom: -150px;
+            right: -150px;
+            animation: float 6s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-30px) translateX(20px); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 50px 40px;
+            max-width: 550px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ff6b9d, #c471ed);
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 35px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .menu-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .menu-item {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            border: none;
+            border-radius: 20px;
+            padding: 20px 15px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-align: center;
+            color: #6b46c1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .menu-item:hover::before {
+            left: 100%;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.4);
+            background: linear-gradient(135deg, #ff6b9d, #ffc3d5);
+            color: white;
+        }
+
+        .menu-item:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .menu-item .icon {
+            font-size: 1.5em;
+        }
+
+        .bottom-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .bottom-btn {
+            background: linear-gradient(135deg, #ff6b9d, #c471ed);
+            border: none;
+            color: white;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: lowercase;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bottom-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .bottom-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .bottom-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
+        }
+
+        .content-page {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 35px;
+            margin-top: 20px;
+            animation: fadeInScale 0.4s ease;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+        }
+
+        .content-page.active {
+            display: block;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .content-page h2 {
+            background: linear-gradient(135deg, #ff6b9d, #c471ed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-size: 1.9em;
+            font-weight: 800;
+        }
+
+        .content-page h3 {
+            color: #6b46c1;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        .content-page p, .content-page ul {
+            color: #444;
+            line-height: 1.9;
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+
+        .content-page ul {
+            padding-left: 25px;
+        }
+
+        .content-page li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 5px;
+        }
+
+        .content-page li::marker {
+            color: #ff6b9d;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1em;
+            margin-top: 15px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #ff6b9d, #c471ed);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1em;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 35px 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+                letter-spacing: 2px;
+            }
+
+            .menu-list {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-item {
+                padding: 18px 20px;
+                font-size: 1.05em;
+            }
+
+            .bottom-buttons {
+                flex-direction: column;
+            }
+
+            .bottom-btn {
+                width: 100%;
+            }
+
+            .content-page {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="mainMenu">
+            <h1>MACHINE LEARNING</h1>
+            <div class="menu-list">
+                <button class="menu-item" onclick="showContent(1)">
+                    <span class="icon">🎯</span>
+                    <span>Pertemuan 1</span>
+                </button>
+                <button class="menu-item" onclick="showContent(2)">
+                    <span class="icon">🔧</span>
+                    <span>Pertemuan 2</span>
+                </button>
+                <button class="menu-item" onclick="showContent(3)">
+                    <span class="icon">📊</span>
+                    <span>Pertemuan 3</span>
+                </button>
+                <button class="menu-item" onclick="showContent(4)">
+                    <span class="icon">🎲</span>
+                    <span>Pertemuan 4</span>
+                </button>
+                <button class="menu-item" onclick="showContent(5)">
+                    <span class="icon">🧮</span>
+                    <span>Pertemuan 5</span>
+                </button>
+                <button class="menu-item" onclick="showContent(6)">
+                    <span class="icon">📈</span>
+                    <span>Pertemuan 6</span>
+                </button>
+                <button class="menu-item" onclick="showContent(7)">
+                    <span class="icon">📉</span>
+                    <span>Pertemuan 7</span>
+                </button>
+                <button class="menu-item" onclick="showContent(8)">
+                    <span class="icon">✅</span>
+                    <span>Pertemuan 8</span>
+                </button>
+                <button class="menu-item" onclick="showContent(9)">
+                    <span class="icon">📝</span>
+                    <span>Pertemuan 9</span>
+                </button>
+                <button class="menu-item" onclick="showContent(10)">
+                    <span class="icon">🌳</span>
+                    <span>Pertemuan 10</span>
+                </button>
+                <button class="menu-item" onclick="showContent(11)">
+                    <span class="icon">🌐</span>
+                    <span>Pertemuan 11</span>
+                </button>
+                <button class="menu-item" onclick="showContent(12)">
+                    <span class="icon">🧠</span>
+                    <span>Pertemuan 12</span>
+                </button>
+                <button class="menu-item" onclick="showContent(13)">
+                    <span class="icon">👁️</span>
+                    <span>Pertemuan 13</span>
+                </button>
+                <button class="menu-item" onclick="showContent(14)">
+                    <span class="icon">🎯</span>
+                    <span>Pertemuan 14</span>
+                </button>
+                <button class="menu-item" onclick="showContent(15)">
+                    <span class="icon">⚡</span>
+                    <span>Pertemuan 15</span>
+                </button>
+                <button class="menu-item" onclick="showContent(16)">
+                    <span class="icon">🎨</span>
+                    <span>Pertemuan 16</span>
+                </button>
+            </div>
+            <div class="bottom-buttons">
+                <button class="bottom-btn" onclick="showMateri()">📚 materi</button>
+            </div>
+        </div>
+
+        <!-- Pertemuan 1 -->
+        <div id="content1" class="content-page">
+            <h2>Pertemuan 1: Pengenalan Machine Learning dan Industri 4.0</h2>
+            <p>Memahami konsep dasar Machine Learning dalam konteks revolusi industri 4.0 dan transformasi digital.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Definisi dan konsep Machine Learning</li>
+                <li>Peran ML dalam Industri 4.0</li>
+                <li>Aplikasi ML di berbagai industri</li>
+                <li>Tren dan perkembangan terkini</li>
+                <li>Ecosystem Machine Learning</li>
+            </ul>
+
+            <h3>Tujuan Pembelajaran:</h3>
+            <p>Mahasiswa memahami peran strategis Machine Learning dalam transformasi digital dan industri modern.</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 2 -->
+        <div id="content2" class="content-page">
+            <h2>Pertemuan 2: Preprocessing</h2>
+            <p>Teknik-teknik preprocessing data untuk mempersiapkan dataset sebelum training model.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Data Cleaning dan handling missing values</li>
+                <li>Data Transformation (normalisasi, standardisasi)</li>
+                <li>Feature Scaling</li>
+                <li>Encoding categorical variables</li>
+                <li>Handling outliers</li>
+            </ul>
+
+            <h3>Tools & Libraries:</h3>
+            <p>Pandas, NumPy, Scikit-learn untuk data preprocessing</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 3 -->
+        <div id="content3" class="content-page">
+            <h2>Pertemuan 3: Supervised Learning</h2>
+            <p>Pengenalan algoritma supervised learning untuk klasifikasi dan regresi.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Konsep Supervised Learning</li>
+                <li>Classification vs Regression</li>
+                <li>Training dan Testing Data</li>
+                <li>Model Evaluation Metrics</li>
+                <li>Overfitting dan Underfitting</li>
+            </ul>
+
+            <h3>Algoritma:</h3>
+            <p>Linear Regression, Logistic Regression, Decision Trees</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 4 -->
+        <div id="content4" class="content-page">
+            <h2>Pertemuan 4: K-Nearest Neighbors (KNN)</h2>
+            <p>Algoritma klasifikasi berbasis instance yang sederhana namun powerful.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Konsep dan cara kerja KNN</li>
+                <li>Distance Metrics (Euclidean, Manhattan)</li>
+                <li>Memilih nilai K yang optimal</li>
+                <li>Kelebihan dan kekurangan KNN</li>
+                <li>Implementasi KNN</li>
+            </ul>
+
+            <h3>Use Cases:</h3>
+            <p>Recommender systems, pattern recognition, image classification</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 5 -->
+        <div id="content5" class="content-page">
+            <h2>Pertemuan 5: Naive Bayes</h2>
+            <p>Algoritma probabilistik berbasis Teorema Bayes untuk klasifikasi.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Teorema Bayes</li>
+                <li>Asumsi "Naive" dalam Naive Bayes</li>
+                <li>Gaussian, Multinomial, Bernoulli Naive Bayes</li>
+                <li>Text Classification dengan Naive Bayes</li>
+                <li>Handling zero probability</li>
+            </ul>
+
+            <h3>Aplikasi:</h3>
+            <p>Spam detection, sentiment analysis, document categorization</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 6 -->
+        <div id="content6" class="content-page">
+            <h2>Pertemuan 6: Logistic Regression</h2>
+            <p>Algoritma regresi untuk masalah klasifikasi biner dan multiclass.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Sigmoid/Logistic Function</li>
+                <li>Binary dan Multiclass Classification</li>
+                <li>Cost Function dan Gradient Descent</li>
+                <li>Regularization (L1, L2)</li>
+                <li>Model Interpretation</li>
+            </ul>
+
+            <h3>Evaluasi Model:</h3>
+            <p>Confusion Matrix, Precision, Recall, F1-Score, ROC-AUC</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 7 -->
+        <div id="content7" class="content-page">
+            <h2>Pertemuan 7: Linear Regression</h2>
+            <p>Algoritma fundamental untuk prediksi nilai kontinyu.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Simple dan Multiple Linear Regression</li>
+                <li>Least Squares Method</li>
+                <li>Assumptions of Linear Regression</li>
+                <li>Polynomial Regression</li>
+                <li>Ridge dan Lasso Regression</li>
+            </ul>
+
+            <h3>Metrics:</h3>
+            <p>MSE, RMSE, MAE, R-squared, Adjusted R-squared</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 8 -->
+        <div id="content8" class="content-page">
+            <h2>Pertemuan 8: Evaluasi Model Machine Learning</h2>
+            <p>Teknik dan metrik untuk mengevaluasi performa model ML.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Train-Test Split dan Cross Validation</li>
+                <li>Confusion Matrix dan Classification Metrics</li>
+                <li>ROC Curve dan AUC</li>
+                <li>Bias-Variance Tradeoff</li>
+                <li>Hyperparameter Tuning</li>
+            </ul>
+
+            <h3>Techniques:</h3>
+            <p>K-Fold CV, Stratified CV, Grid Search, Random Search</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 9 -->
+        <div id="content9" class="content-page">
+            <h2>Pertemuan 9: UTS - Ujian Tengah Semester</h2>
+            <p>Evaluasi pemahaman materi pertemuan 1-8</p>
+            
+            <h3>Cakupan Materi:</h3>
+            <ul>
+                <li>Pengenalan ML dan Industri 4.0</li>
+                <li>Data Preprocessing</li>
+                <li>Supervised Learning</li>
+                <li>Algoritma: KNN, Naive Bayes, Logistic & Linear Regression</li>
+                <li>Model Evaluation</li>
+            </ul>
+
+            <h3>Format:</h3>
+            <p>Teori (40%) + Praktikum/Studi Kasus (60%)</p>
+            
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 10 -->
+        <div id="content10" class="content-page">
+            <h2>Pertemuan 10: Decision Trees</h2>
+            <p>Algoritma berbasis pohon keputusan untuk klasifikasi dan regresi.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Struktur Decision Tree</li>
+                <li>Splitting Criteria (Gini, Entropy, Information Gain)</li>
+                <li>Pruning untuk menghindari overfitting</li>
+                <li>Feature Importance</li>
+                <li>CART Algorithm</li>
+            </ul>
+
+            <h3>Keunggulan:</h3>
+            <p>Interpretable, handle non-linear relationships, no feature scaling needed</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 11 -->
+        <div id="content11" class="content-page">
+            <h2>Pertemuan 11: KNN Berbasis Web Flask</h2>
+            <p>Implementasi aplikasi web Machine Learning menggunakan Flask framework.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Setup Flask untuk ML deployment</li>
+                <li>Membuat REST API untuk prediksi</li>
+                <li>Integrasi model KNN dengan Flask</li>
+                <li>Frontend untuk input dan visualisasi</li>
+                <li>Deployment aplikasi ML</li>
+            </ul>
+
+            <h3>Tech Stack:</h3>
+            <p>Python, Flask, Scikit-learn, HTML/CSS, JavaScript</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 12 -->
+        <div id="content12" class="content-page">
+            <h2>Pertemuan 12: Deep Learning</h2>
+            <p>Pengenalan neural networks dan deep learning fundamentals.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Artificial Neural Networks (ANN)</li>
+                <li>Activation Functions</li>
+                <li>Backpropagation</li>
+                <li>Convolutional Neural Networks (CNN)</li>
+                <li>Recurrent Neural Networks (RNN)</li>
+            </ul>
+
+            <h3>Framework:</h3>
+            <p>TensorFlow, Keras, PyTorch</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 13 -->
+        <div id="content13" class="content-page">
+            <h2>Pertemuan 13: Object Detection (Deteksi dan Jalur Berkendara)</h2>
+            <p>Teknik computer vision untuk deteksi objek dan aplikasi autonomous driving.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Object Detection Algorithms (YOLO, R-CNN, SSD)</li>
+                <li>Lane Detection untuk autonomous vehicles</li>
+                <li>Image Processing untuk computer vision</li>
+                <li>Real-time object tracking</li>
+                <li>Evaluasi detection models (mAP, IoU)</li>
+            </ul>
+
+            <h3>Use Cases:</h3>
+            <p>Self-driving cars, traffic monitoring, safety systems</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 14 -->
+        <div id="content14" class="content-page">
+            <h2>Pertemuan 14: Multi-Label Detection (Deteksi dan Objek, Jalur, Rambu)</h2>
+            <p>Deteksi multiple objects secara simultan untuk aplikasi kompleks.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Multi-label Classification vs Multi-object Detection</li>
+                <li>Deteksi objek, lane lines, dan traffic signs bersamaan</li>
+                <li>Complex scene understanding</li>
+                <li>Integration dengan sistem autonomous</li>
+                <li>Optimization untuk real-time processing</li>
+            </ul>
+
+            <h3>Advanced Topics:</h3>
+            <p>Attention mechanisms, multi-task learning, model fusion</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 15 -->
+        <div id="content15" class="content-page">
+            <h2>Pertemuan 15: Real-Time Detection (Deteksi Real-Time dan Bounding Box)</h2>
+            <p>Implementasi sistem deteksi objek real-time dengan visualisasi bounding box.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Real-time video processing</li>
+                <li>Bounding box prediction dan visualization</li>
+                <li>Frame rate optimization</li>
+                <li>Hardware acceleration (GPU/TPU)</li>
+                <li>Deployment pada edge devices</li>
+            </ul>
+
+            <h3>Performance:</h3>
+            <p>Latency reduction, FPS optimization, model compression</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Pertemuan 16 -->
+        <div id="content16" class="content-page">
+            <h2>Pertemuan 16: Object Segmentation</h2>
+            <p>Teknik segmentasi untuk pemisahan objek di level pixel.</p>
+            
+            <h3>Topik Pembahasan:</h3>
+            <ul>
+                <li>Semantic Segmentation vs Instance Segmentation</li>
+                <li>U-Net Architecture</li>
+                <li>Mask R-CNN</li>
+                <li>Pixel-wise classification</li>
+                <li>Medical imaging applications</li>
+            </ul>
+
+            <h3>Applications:</h3>
+            <p>Medical diagnosis, autonomous driving, satellite imagery analysis</p>
+            
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📥 Download Materi</a>
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+
+        <!-- Halaman Materi -->
+        <div id="materiPage" class="content-page">
+            <h2>Ringkasan Materi Perkuliahan</h2>
+            <p>Mata Kuliah Machine Learning - 16 Pertemuan</p>
+            
+            <h3>Part 1: Fundamentals (Pertemuan 1-4)</h3>
+            <ul>
+                <li>Pengenalan ML dan Industri 4.0</li>
+                <li>Preprocessing data</li>
+                <li>Supervised Learning</li>
+                <li>K-Nearest Neighbors (KNN)</li>
+            </ul>
+
+            <h3>Part 2: Classification Algorithms (Pertemuan 5-8)</h3>
+            <ul>
+                <li>Naive Bayes</li>
+                <li>Logistic Regression</li>
+                <li>Linear Regression</li>
+                <li>Model Evaluation</li>
+            </ul>
+
+            <h3>Part 3: Advanced ML & Deep Learning (Pertemuan 10-12)</h3>
+            <ul>
+                <li>Decision Trees</li>
+                <li>Web deployment dengan Flask</li>
+                <li>Deep Learning fundamentals</li>
+            </ul>
+
+            <h3>Part 4: Computer Vision (Pertemuan 13-16)</h3>
+            <ul>
+                <li>Object Detection</li>
+                <li>Multi-label Detection</li>
+                <li>Real-time Detection</li>
+                <li>Object Segmentation</li>
+            </ul>
+
+            <h3>Akses Semua Materi:</h3>
+            <a href="https://drive.google.com/drive/folders/1aQXolWRkfQ7KbDtCE-xUisTQvxdsDBtH" target="_blank" class="download-btn">📁 Buka Google Drive</a>
+            
+            <button class="back-btn" onclick="showMain()">← Kembali</button>
+        </div>
+    </div>
+
+    <script>
+        function showMain() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.querySelectorAll('.content-page').forEach(page => {
+                page.classList.remove('active');
+            });
+        }
+
+        function showContent(num) {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.querySelectorAll('.content-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('content' + num).classList.add('active');
+        }
+
+        function showMateri() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.querySelectorAll('.content-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('materiPage').classList.add('active');
+        }
+    </script>
+</body>
+</html>
